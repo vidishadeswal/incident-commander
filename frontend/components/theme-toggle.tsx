@@ -7,25 +7,36 @@ const STORAGE_KEY = "incident-commander-theme";
 type ThemeMode = "light" | "dark";
 
 function resolveTheme(): ThemeMode {
-  if (typeof window === "undefined") {
+  /*
+  if (typeof window === "undefined" || !window.localStorage) {
     return "light";
   }
-  const saved = window.localStorage.getItem(STORAGE_KEY);
-  if (saved === "light" || saved === "dark") {
-    return saved;
+  try {
+    const saved = window.localStorage.getItem(STORAGE_KEY);
+    if (saved === "light" || saved === "dark") {
+      return saved;
+    }
+  } catch (_) {
+    // ignore
   }
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
+  */
+  return "dark"; // Default to dark for premium look
 }
 
 function applyTheme(mode: ThemeMode): void {
+  if (typeof window === "undefined") return;
   document.documentElement.dataset.theme = mode;
-  window.localStorage.setItem(STORAGE_KEY, mode);
+  /*
+  try {
+    window.localStorage.setItem(STORAGE_KEY, mode);
+  } catch (_) {
+    // ignore
+  }
+  */
 }
 
 export function ThemeToggle() {
-  const [mode, setMode] = useState<ThemeMode>("light");
+  const [mode, setMode] = useState<ThemeMode>("dark");
 
   useEffect(() => {
     const initial = resolveTheme();

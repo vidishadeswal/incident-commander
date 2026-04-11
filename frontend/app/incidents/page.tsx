@@ -105,29 +105,31 @@ export default function IncidentsPage() {
     <main className="page shellGrid">
       <section className="pageIntro">
         <p className="eyebrow">Incidents</p>
-        <h1>Create and track incident lifecycle</h1>
-        <p>
-          This page is for manual incident operations. Create incidents, review
-          current status, and move each incident from open to resolved.
+        <h1>Incident Operations Center</h1>
+        <p style={{ fontSize: '1.5rem' }}>
+          Real-time incident management for high-availability systems. 
+          Monitor, investigate, and resolve production blockers with full context.
         </p>
-        <div className="statusRow">
-          <span className="pill neutral">{busy ? "Working..." : notice}</span>
+        <div className="statusRow" style={{ marginTop: '2.5rem' }}>
+          <span className="pill neutral" style={{ padding: '10px 20px', fontSize: '1rem' }}>{busy ? "Working..." : notice}</span>
           <button
+            className="ghostButton"
+            style={{ minWidth: '150px' }}
             type="button"
             onClick={() => void refreshIncidents(selectedId ?? undefined)}
           >
-            Refresh
+            Refresh Hub
           </button>
         </div>
-        {error ? <p className="error">{error}</p> : null}
+        {error ? <p className="error" style={{ marginTop: '2rem' }}>{error}</p> : null}
       </section>
 
       <section className="splitPane">
         <article className="panelBox">
-          <h2>Incident List</h2>
+          <h2 style={{ marginBottom: '3rem' }}>Active Incidents</h2>
           <div className="listStack">
             {incidents.length === 0 ? (
-              <p className="muted">No incidents yet.</p>
+              <p className="muted">No incidents in the stream.</p>
             ) : null}
             {incidents.map((incident) => (
               <button
@@ -139,11 +141,14 @@ export default function IncidentsPage() {
                 <strong>
                   #{incident.id} {incident.title}
                 </strong>
-                <span>{incident.service}</span>
-                <span>
-                  {incident.severity.toUpperCase()} · {incident.status}
-                </span>
-                <span>Started {toLocalDateTime(incident.started_at)}</span>
+                <div style={{ marginTop: '1rem', display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+                    <span className="pill" style={{ background: 'rgba(0,0,0,0.3)' }}>{incident.service}</span>
+                    <span className="pill" style={{ background: incident.severity === 'sev1' ? 'var(--error)' : 'rgba(255,255,255,0.1)', color: incident.severity === 'sev1' ? '#000' : 'inherit' }}>
+                        {incident.severity.toUpperCase()}
+                    </span>
+                    <span className="pill" style={{ border: '1px solid var(--accent)', color: 'var(--accent)' }}>{incident.status}</span>
+                </div>
+                <span style={{ marginTop: '0.5rem', opacity: 0.6 }}>Investigation started: {toLocalDateTime(incident.started_at)}</span>
               </button>
             ))}
           </div>
@@ -151,7 +156,7 @@ export default function IncidentsPage() {
 
         <article className="panelBox">
           <form className="formBlock" onSubmit={handleCreate}>
-            <h2>Create Incident</h2>
+            <h2 style={{ marginBottom: '3rem' }}>Initialize New Incident</h2>
             <label data-tooltip="Enter a clear, concise title for the incident (e.g., 'Database Connection Timeout')">
               Title
               <input
@@ -179,7 +184,7 @@ export default function IncidentsPage() {
                 }
               />
             </label>
-            <div className="inlineGrid">
+            <div className="inlineGrid" style={{ gap: '2rem' }}>
               <label data-tooltip="SEV1 is critical/outage, SEV4 is minor/informational.">
                 Severity
                 <select
@@ -191,10 +196,10 @@ export default function IncidentsPage() {
                     }))
                   }
                 >
-                  <option value="sev1">SEV1 - Critical</option>
-                  <option value="sev2">SEV2 - High</option>
-                  <option value="sev3">SEV3 - Medium</option>
-                  <option value="sev4">SEV4 - Low</option>
+                  <option value="sev1">SEV1 - Critical Outage</option>
+                  <option value="sev2">SEV2 - High Impact</option>
+                  <option value="sev3">SEV3 - Medium Impact</option>
+                  <option value="sev4">SEV4 - Low Impact</option>
                 </select>
               </label>
               <label data-tooltip="The primary microservice or system affected by this incident.">
@@ -224,32 +229,36 @@ export default function IncidentsPage() {
                 }
               />
             </label>
-            <button type="submit">Create Incident</button>
+            <button type="submit" className="ctaButton" style={{ marginTop: '2rem', width: '100%', maxWidth: 'none' }}>
+                Open Incident
+            </button>
           </form>
 
+          <div style={{ margin: '4rem 0', height: '1px', background: 'var(--border)' }} />
+
           <form className="formBlock" onSubmit={handleStatusUpdate}>
-            <h2>Update Status</h2>
-            <p className="muted">
+            <h2 style={{ marginBottom: '3rem' }}>Lifecycle Management</h2>
+            <p className="muted" style={{ marginBottom: '1.5rem' }}>
               {selectedIncident
-                ? `Selected incident #${selectedIncident.id}`
-                : "Select an incident from the list first."}
+                ? `Active Focus: Incident #${selectedIncident.id}`
+                : "Select an incident from the stream to manage its status."}
             </p>
             <label data-tooltip="Transition the incident through its lifecycle stages.">
-              New Status
+              New Operational Status
               <select
                 value={nextStatus}
                 onChange={(event) =>
                   setNextStatus(event.target.value as IncidentStatus)
                 }
               >
-                <option value="open">Open (Newly Created)</option>
-                <option value="investigating">Investigating (Active Analysis)</option>
+                <option value="open">Open (Identified)</option>
+                <option value="investigating">Investigating (Diagnosing)</option>
                 <option value="mitigated">Mitigated (Impact Cleared)</option>
-                <option value="resolved">Resolved (Closed)</option>
+                <option value="resolved">Resolved (Permanent Fix)</option>
               </select>
             </label>
-            <button type="submit" disabled={!selectedIncident}>
-              Apply Status
+            <button type="submit" className="ctaButton" disabled={!selectedIncident} style={{ marginTop: '2rem', width: '100%', maxWidth: 'none' }}>
+              Update Lifecycle Stage
             </button>
           </form>
         </article>

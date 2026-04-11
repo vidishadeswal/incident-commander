@@ -178,22 +178,22 @@ export default function IngestionPage() {
     <main className="page shellGrid">
       <section className="pageIntro">
         <p className="eyebrow">Ingestion</p>
-        <h1>Bring alerts, logs, and GitHub signals into incidents</h1>
-        <p>
-          This page simulates incoming production signals. Use webhook secrets
-          when your backend requires them. You can attach data to an existing
-          incident or let the backend create one.
+        <h1>Signal Command Center</h1>
+        <p style={{ fontSize: '1.5rem' }}>
+          Consolidate disparate signals into a unified intelligence stream. 
+          Manually ingest alerts, logs, and GitHub events to simulate production traffic.
         </p>
-        <div className="statusRow">
-          <span className="pill neutral">{busy ? "Working..." : notice}</span>
+        <div className="statusRow" style={{ marginTop: '2.5rem' }}>
+          <span className="pill neutral" style={{ padding: '10px 20px', fontSize: '1rem' }}>{busy ? "Working..." : notice}</span>
         </div>
-        {error ? <p className="error">{error}</p> : null}
+        {error ? <p className="error" style={{ marginTop: '2rem' }}>{error}</p> : null}
       </section>
 
       <section className="featureGrid threeCols">
-        <article className="panelBox">
-          <h2>Alert Ingestion</h2>
-          <p className="muted">Posts to /ingest/alerts</p>
+        {/* Alert Ingestion */}
+        <article className="panelBox" style={{ padding: '4rem' }}>
+          <h2 style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>Alert Gateway</h2>
+          <p className="muted" style={{ marginBottom: '2.5rem' }}>Posts to <code>/ingest/alerts</code></p>
           <form className="formBlock" onSubmit={handleAlert}>
             <label data-tooltip="Optional authentication secret for the alert ingestion endpoint.">
               x-alert-secret
@@ -236,18 +236,19 @@ export default function IngestionPage() {
                 }
               />
             </label>
-            <button type="submit">Ingest Alert</button>
+            <button type="submit" className="ctaButton" style={{ width: '100%', maxWidth: 'none', marginTop: '1.5rem' }}>Ingest Alert</button>
           </form>
         </article>
 
-        <article className="panelBox">
-          <h2>Log Ingestion</h2>
-          <p className="muted">Posts to /ingest/logs</p>
+        {/* Log Ingestion */}
+        <article className="panelBox" style={{ padding: '4rem' }}>
+          <h2 style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>Log Stream</h2>
+          <p className="muted" style={{ marginBottom: '2.5rem' }}>Posts to <code>/ingest/logs</code></p>
           <form className="formBlock" onSubmit={handleLogs}>
             <label data-tooltip="Link this log to an existing incident ID, or leave blank to create a new one.">
               Incident ID (optional)
               <input
-                list="incident-options"
+                list="incident-options-logs"
                 placeholder="Select or enter ID"
                 value={logForm.incident_id}
                 onChange={(event) =>
@@ -258,7 +259,7 @@ export default function IngestionPage() {
                 }
               />
             </label>
-            <div className="inlineGrid">
+            <div className="inlineGrid" style={{ gap: '1.5rem' }}>
               <label data-tooltip="The name of the service that generated this log.">
                 Service
                 <input
@@ -303,13 +304,14 @@ export default function IngestionPage() {
                 }
               />
             </label>
-            <button type="submit">Ingest Log Event</button>
+            <button type="submit" className="ctaButton" style={{ width: '100%', maxWidth: 'none', marginTop: '1.5rem' }}>Ingest Log Event</button>
           </form>
         </article>
 
-        <article className="panelBox">
-          <h2>GitHub Ingestion</h2>
-          <p className="muted">Posts to /ingest/github</p>
+        {/* GitHub Ingestion */}
+        <article className="panelBox" style={{ padding: '4rem' }}>
+          <h2 style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>Repo Activity</h2>
+          <p className="muted" style={{ marginBottom: '2.5rem' }}>Posts to <code>/ingest/github</code></p>
           <form className="formBlock" onSubmit={handleGithub}>
             <label data-tooltip="Authentication secret for GitHub webhooks.">
               x-github-secret
@@ -325,33 +327,35 @@ export default function IngestionPage() {
                 }
               />
             </label>
-            <label data-tooltip="Link this event to an existing incident ID.">
-              Incident ID (optional)
-              <input
-                list="incident-options"
-                placeholder="Select or enter ID"
-                value={githubForm.incident_id}
-                onChange={(event) =>
-                  setGithubForm((prev) => ({
-                    ...prev,
-                    incident_id: event.target.value,
-                  }))
-                }
-              />
-            </label>
-            <label data-tooltip="The repository name where the event occurred.">
-              Repository
-              <input
-                placeholder="org/shop-api"
-                value={githubForm.repository}
-                onChange={(event) =>
-                  setGithubForm((prev) => ({
-                    ...prev,
-                    repository: event.target.value,
-                  }))
-                }
-              />
-            </label>
+            <div className="inlineGrid" style={{ gap: '1.5rem' }}>
+              <label data-tooltip="Link this event to an existing incident ID.">
+                Incident ID (optional)
+                <input
+                  list="incident-options-github"
+                  placeholder="Select or enter ID"
+                  value={githubForm.incident_id}
+                  onChange={(event) =>
+                    setGithubForm((prev) => ({
+                      ...prev,
+                      incident_id: event.target.value,
+                    }))
+                  }
+                />
+              </label>
+              <label data-tooltip="The repository name where the event occurred.">
+                Repository
+                <input
+                  placeholder="org/shop-api"
+                  value={githubForm.repository}
+                  onChange={(event) =>
+                    setGithubForm((prev) => ({
+                      ...prev,
+                      repository: event.target.value,
+                    }))
+                  }
+                />
+              </label>
+            </div>
             <label data-tooltip="Title of the GitHub issue or PR.">
               Title
               <input
@@ -365,12 +369,19 @@ export default function IngestionPage() {
                 }
               />
             </label>
-            <button type="submit">Ingest GitHub Signal</button>
+            <button type="submit" className="ctaButton" style={{ width: '100%', maxWidth: 'none', marginTop: '1.5rem' }}>Ingest GitHub Signal</button>
           </form>
         </article>
       </section>
 
-      <datalist id="incident-options">
+      <datalist id="incident-options-logs">
+        {incidents.map((incident) => (
+          <option key={incident.id} value={incident.id.toString()}>
+            #{incident.id} {incident.title}
+          </option>
+        ))}
+      </datalist>
+      <datalist id="incident-options-github">
         {incidents.map((incident) => (
           <option key={incident.id} value={incident.id.toString()}>
             #{incident.id} {incident.title}

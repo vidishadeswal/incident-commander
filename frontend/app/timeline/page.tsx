@@ -59,24 +59,24 @@ export default function TimelinePage() {
     <main className="page shellGrid">
       <section className="pageIntro">
         <p className="eyebrow">Timeline</p>
-        <h1>View incident chronology and confidence markers</h1>
-        <p>
-          This page rebuilds timeline entries from normalized incident events.
-          It helps teams see what happened, in order, with deterministic
-          categories.
+        <h1>Deterministic Evidence Chain</h1>
+        <p style={{ fontSize: '1.5rem' }}>
+          Automatically reconstruct the sequence of events from normalized signals. 
+          Identify the exact moment of regression with confidence-scored evidence.
         </p>
-        <div className="statusRow">
-          <span className="pill neutral">{busy ? "Working..." : notice}</span>
+        <div className="statusRow" style={{ marginTop: '2.5rem' }}>
+          <span className="pill neutral" style={{ padding: '10px 20px', fontSize: '1rem' }}>{busy ? "Rebuilding..." : notice}</span>
         </div>
-        {error ? <p className="error">{error}</p> : null}
+        {error ? <p className="error" style={{ marginTop: '2rem' }}>{error}</p> : null}
       </section>
 
-      <section className="featureGrid twoCols">
+      <section className="splitPane">
         <article className="panelBox">
-          <h2>Incident Selector</h2>
+          <h2 style={{ marginBottom: '3rem' }}>Incident Scope</h2>
           <label data-tooltip="Select the incident you want to generate a chronological timeline for.">
-            Incident
+            Active Incident
             <select
+              style={{ marginTop: '1rem' }}
               value={selectedId ?? ""}
               onChange={(event) =>
                 setSelectedId(
@@ -92,41 +92,54 @@ export default function TimelinePage() {
               ))}
             </select>
           </label>
-          <div className="inlineActions">
+          <div className="inlineActions" style={{ marginTop: '3rem', display: 'flex', gap: '1.5rem', flexDirection: 'column' }}>
             <button
+              className="ghostButton"
+              style={{ width: '100%' }}
               type="button"
               onClick={() => void refreshIncidents(selectedId ?? undefined)}
             >
-              Refresh Incidents
+              Sync Incidents
             </button>
             <button
+              className="ctaButton"
+              style={{ width: '100%', maxWidth: 'none' }}
               type="button"
               onClick={() => selectedId && void loadTimeline(selectedId)}
               disabled={!selectedId}
             >
-              Rebuild Timeline
+              Reconstruct Timeline
             </button>
           </div>
         </article>
 
         <article className="panelBox">
-          <h2>Timeline Entries</h2>
+          <h2 style={{ marginBottom: '3rem' }}>Visual Chronology</h2>
           {timeline.length === 0 ? (
-            <p className="muted">No timeline entries yet.</p>
-          ) : null}
-          <div className="timelineStack">
-            {timeline.map((entry, index) => (
-              <div key={`${entry.timestamp}-${index}`} className="timelineCard">
-                <p className="metaText">
-                  <strong>{entry.category}</strong> ·{" "}
-                  {toLocalDateTime(entry.timestamp)} · confidence{" "}
-                  {entry.confidence.toFixed(2)}
-                </p>
-                <p className="timelineSummary">{entry.summary}</p>
-                <p>{entry.detail}</p>
-              </div>
-            ))}
-          </div>
+            <p className="muted">No evidence captured for this incident yet. Use the Ingestion module to push signals.</p>
+          ) : (
+            <div className="timelineGraph">
+              <div className="timelineLine" />
+              {timeline.map((entry, index) => (
+                <div key={`${entry.timestamp}-${index}`} className="timelineVisualEntry">
+                  <div className="timeColumn">
+                    <strong style={{ color: 'var(--accent)', fontSize: '0.9rem' }}>
+                        {new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </strong>
+                  </div>
+                  <div className="contentColumn">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                        <span className="pill" style={{ background: 'rgba(0, 242, 255, 0.1)', color: 'var(--accent)', fontSize: '0.8rem' }}>{entry.category.toUpperCase()}</span>
+                        <span style={{ fontSize: '0.8rem', opacity: 0.5 }}>Conf: {(entry.confidence * 100).toFixed(0)}%</span>
+                    </div>
+                    <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', color: 'var(--ink)' }}>{entry.summary}</h3>
+                    <p style={{ fontSize: '1rem' }}>{entry.detail}</p>
+                    <div style={{ marginTop: '1rem', fontSize: '0.8rem', opacity: 0.4 }}>{toLocalDateTime(entry.timestamp)}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </article>
       </section>
     </main>
